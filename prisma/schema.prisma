@@ -1,0 +1,59 @@
+// Resource Scheduler (per-person-per-day-per-project, 8h/day capacity)
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Person {
+  id          String       @id @default(cuid())
+  name        String
+  email       String?      @unique
+  active      Boolean      @default(true)
+  assignments Assignment[]
+  timeOff     TimeOff[]
+}
+
+model Project {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  active      Boolean      @default(true)
+  assignments Assignment[]
+}
+
+model Assignment {
+  id        String   @id @default(cuid())
+  personId  String
+  projectId String
+  date      DateTime @db.Date
+  hours     Decimal  @db.Decimal(5,2)
+
+  person    Person   @relation(fields: [personId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  @@unique([personId, projectId, date])
+  @@index([projectId, date])
+  @@index([personId, date])
+}
+
+model TimeOff {
+  id       String   @id @default(cuid())
+  personId String
+  date     DateTime @db.Date
+  hours    Decimal  @db.Decimal(5,2) @default(8.0)
+  type     String   @default("Ferie")
+
+  person   Person   @relation(fields: [personId], references: [id])
+
+  @@unique([personId, date, type])
+  @@index([personId, date])
+}
+
+model Holiday {
+  date DateTime @id @db.Date
+  name String
+}

@@ -1,0 +1,19 @@
+:root{color-scheme:light dark;}
+body{font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin:0; padding:0;}
+.container{max-width:1200px;margin:0 auto;padding:16px;}
+.header{display:flex;gap:12px;flex-wrap:wrap;align-items:end;}
+.card{border:1px solid rgba(120,120,120,.35); border-radius:12px; padding:12px;}
+label{font-size:12px; opacity:.8; display:block; margin-bottom:4px;}
+select,input[type=date]{padding:8px;border-radius:10px;border:1px solid rgba(120,120,120,.35); background:transparent;}
+button{padding:9px 12px;border-radius:10px;border:1px solid rgba(120,120,120,.35); background:transparent; cursor:pointer;}
+button:hover{filter:brightness(1.1);}
+.tableWrap{overflow:auto; border-radius:12px; border:1px solid rgba(120,120,120,.35);}
+table{border-collapse:collapse; width:max-content; min-width:100%;}
+th,td{border-bottom:1px solid rgba(120,120,120,.25); border-right:1px solid rgba(120,120,120,.15); padding:6px; font-size:12px; white-space:nowrap;}
+th{position:sticky; top:0; background:rgba(0,0,0,.06); z-index:2;}
+.stickyCol{position:sticky; left:0; background:rgba(0,0,0,.04); z-index:3;}
+.cellInput{width:56px; padding:6px; border-radius:10px; border:1px solid rgba(120,120,120,.35); background:transparent; text-align:right;}
+.over{outline:2px solid rgba(220,40,40,.7); outline-offset:-2px;}
+.muted{opacity:.75; font-size:12px;}
+.rowTotal{font-variant-numeric: tabular-nums; text-align:right;}
+.toast{position:fixed; right:16px; bottom:16px; max-width:420px; padding:12px 14px; border-radius:12px; border:1px solid rgba(120,120,120,.35); background:rgba(0,0,0,.78); color:white;}
