@@ -22,12 +22,15 @@ export default function AdminPage() {
 
   async function addProject() {
     setMsg("");
+    const name = newProject.trim();
+    if (!name) return setMsg("Project name is required.");
+
     const res = await fetch("/api/projects/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newProject })
+      body: JSON.stringify({ name })
     });
-    const j = await res.json();
+    const j = await res.json().catch(() => ({}));
     if (!res.ok) return setMsg(j.message ?? "Failed to add project");
     setNewProject("");
     await refresh();
@@ -35,14 +38,65 @@ export default function AdminPage() {
 
   async function addPerson() {
     setMsg("");
+    const name = newPerson.trim();
+    if (!name) return setMsg("Person name is required.");
+
     const res = await fetch("/api/people/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newPerson })
+      body: JSON.stringify({ name })
     });
-    const j = await res.json();
+    const j = await res.json().catch(() => ({}));
     if (!res.ok) return setMsg(j.message ?? "Failed to add person");
     setNewPerson("");
+    await refresh();
+  }
+
+  async function renameProject(id: string, name: string) {
+    setMsg("");
+    const res = await fetch("/api/projects/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, name })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return setMsg(j.message ?? "Failed to rename project");
+    await refresh();
+  }
+
+  async function toggleProjectActive(id: string, active: boolean) {
+    setMsg("");
+    const res = await fetch("/api/projects/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, active })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return setMsg(j.message ?? "Failed to update project");
+    await refresh();
+  }
+
+  async function renamePerson(id: string, name: string) {
+    setMsg("");
+    const res = await fetch("/api/people/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, name })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return setMsg(j.message ?? "Failed to rename person");
+    await refresh();
+  }
+
+  async function togglePersonActive(id: string, active: boolean) {
+    setMsg("");
+    const res = await fetch("/api/people/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, active })
+    });
+    const j = await res.json().catch(() => ({}));
+    if (!res.ok) return setMsg(j.message ?? "Failed to update person");
     await refresh();
   }
 
@@ -54,23 +108,63 @@ export default function AdminPage() {
       <section style={{ marginTop: 24, display: "grid", gap: 24, gridTemplateColumns: "1fr 1fr" }}>
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 600 }}>Projects</h2>
+
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-            <input value={newProject} onChange={e => setNewProject(e.target.value)} placeholder="New project name" />
+            <input
+              value={newProject}
+              onChange={e => setNewProject(e.target.value)}
+              placeholder="New project name"
+            />
             <button onClick={addProject}>Add</button>
           </div>
+
           <ul style={{ marginTop: 12 }}>
-            {projects.map(p => <li key={p.id}>{p.name}</li>)}
+            {projects.map(p => (
+              <li key={p.id} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+                <input
+                  defaultValue={p.name}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v && v !== p.name) renameProject(p.id, v);
+                  }}
+                  style={{ flex: 1 }}
+                />
+                <button onClick={() => toggleProjectActive(p.id, !p.active)}>
+                  {p.active ? "Deactivate" : "Activate"}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
 
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 600 }}>People</h2>
+
           <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-            <input value={newPerson} onChange={e => setNewPerson(e.target.value)} placeholder="New person name" />
+            <input
+              value={newPerson}
+              onChange={e => setNewPerson(e.target.value)}
+              placeholder="New person name"
+            />
             <button onClick={addPerson}>Add</button>
           </div>
+
           <ul style={{ marginTop: 12 }}>
-            {people.map(p => <li key={p.id}>{p.name}</li>)}
+            {people.map(p => (
+              <li key={p.id} style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+                <input
+                  defaultValue={p.name}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v && v !== p.name) renamePerson(p.id, v);
+                  }}
+                  style={{ flex: 1 }}
+                />
+                <button onClick={() => togglePersonActive(p.id, !p.active)}>
+                  {p.active ? "Deactivate" : "Activate"}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
       </section>
